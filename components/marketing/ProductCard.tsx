@@ -32,20 +32,20 @@ export function ProductCard({ product }: { product: Product }) {
           layoutId={coverId}
           layout
           transition={{ ...spring.premium, layout: spring.layout }}
-          className="relative aspect-[16/10] overflow-hidden bg-zinc-900"
+          className="relative flex aspect-[3/2] min-h-0 items-center justify-center overflow-hidden bg-zinc-900 p-0.5 sm:p-1"
         >
           {src ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={src}
               alt=""
-              className="size-full object-cover transition duration-[0.7s] ease-[cubic-bezier(0.34,1.2,0.64,1)] group-hover:scale-[1.07]"
+              className="max-h-full max-w-full object-contain transition duration-[0.7s] ease-[cubic-bezier(0.34,1.2,0.64,1)] group-hover:scale-[1.05]"
             />
           ) : (
             <div className="flex size-full items-center justify-center text-xs text-muted">No image</div>
           )}
           {product.featured ? (
-            <span className="absolute left-3 top-3 rounded-full bg-accent px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-foreground shadow-md ring-1 ring-black/20">
+            <span className="absolute left-2 top-2 rounded-full bg-accent px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-foreground shadow-md ring-1 ring-black/20">
               Featured
             </span>
           ) : null}

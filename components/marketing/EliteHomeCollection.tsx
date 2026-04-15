@@ -37,8 +37,9 @@ function EliteProductLink({
     >
       <div
         className={[
-          "relative overflow-hidden bg-zinc-900",
-          compact ? "aspect-[4/3]" : "min-h-[280px] flex-1 sm:min-h-[340px] lg:min-h-[420px]",
+          "relative flex w-full shrink-0 items-center justify-center overflow-hidden bg-zinc-900 p-0.5 sm:p-1",
+          compact ? "aspect-[4/3]" : "aspect-[4/3] sm:aspect-[3/2]",
+          "min-h-0",
           imageClassName ?? "",
         ].join(" ")}
       >
@@ -47,7 +48,7 @@ function EliteProductLink({
           <img
             src={src}
             alt=""
-            className="size-full object-cover transition duration-[1.1s] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]"
+            className="max-h-full max-w-full object-contain transition duration-[1.1s] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.03]"
           />
         ) : (
           <div className="flex size-full min-h-[200px] items-center justify-center text-[11px] uppercase tracking-[0.2em] text-muted/80">
@@ -106,19 +107,19 @@ export function EliteHomeCollection({ products, emptyMessage }: Props) {
 
   return (
     <motion.div
-      className="grid gap-6 lg:grid-cols-12 lg:gap-8 lg:items-stretch"
+      className="grid gap-6 lg:grid-cols-12 lg:gap-8 lg:items-start"
       variants={staggerContainer(0.08, 0.05)}
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: "-56px", amount: 0.15 }}
     >
       <motion.div variants={staggerItem} className="lg:col-span-7">
-        <EliteProductLink product={primary} className="h-full min-h-[480px] lg:min-h-0" />
+        <EliteProductLink product={primary} />
       </motion.div>
       {secondary.length > 0 ? (
         <motion.div variants={staggerItem} className="flex flex-col gap-6 lg:col-span-5">
           {secondary.map((p) => (
-            <EliteProductLink key={p.id} product={p} compact className="flex-1" />
+            <EliteProductLink key={p.id} product={p} compact />
           ))}
         </motion.div>
       ) : null}

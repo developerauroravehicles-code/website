@@ -171,13 +171,13 @@ export function PremiumScrollHero({
           </div>
 
           <div className="relative mx-auto mt-10 w-full max-w-[min(94vw,560px)] sm:mt-12 sm:max-w-[min(92vw,760px)]">
-            <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-2xl bg-zinc-950/35 ring-1 ring-white/[0.1] backdrop-blur-[0.5px]">
+            <div className="relative aspect-[3/2] w-full overflow-hidden rounded-2xl bg-zinc-950/35 ring-1 ring-white/[0.1] backdrop-blur-[0.5px]">
               <Image
                 src={frontImageSrc}
                 alt={frontAlt}
-                width={1200}
-                height={800}
-                className="h-full w-full max-h-[min(48vh,520px)] object-contain object-center"
+                fill
+                sizes="(max-width: 640px) 94vw, 760px"
+                className="z-0 object-contain object-center p-1 sm:p-2"
                 unoptimized
                 priority
               />

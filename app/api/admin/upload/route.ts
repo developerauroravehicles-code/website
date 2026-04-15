@@ -1,13 +1,15 @@
+import { randomBytes } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { put } from "@vercel/blob";
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/auth-server";
 import { slugify } from "@/lib/slug";
+import { MAX_IMAGE_UPLOAD_BYTES, MAX_IMAGE_UPLOAD_MB } from "@/lib/upload-limits";
 
 export const runtime = "nodejs";
 
-const MAX_PER_FILE = 5 * 1024 * 1024;
+const MAX_PER_FILE = MAX_IMAGE_UPLOAD_BYTES;
 const ALLOWED = new Map<string, string>([
   ["image/jpeg", ".jpg"],
   ["image/png", ".png"],
@@ -77,7 +79,7 @@ export async function POST(request: Request) {
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       if (file.size > MAX_PER_FILE) {
-        return jsonError(`File too large (max ${MAX_PER_FILE / 1024 / 1024}MB each)`, 413);
+        return jsonError(`Dosya çok büyük (dosya başına en fazla ${MAX_IMAGE_UPLOAD_MB} MB).`, 413);
       }
       const mime = file.type || mimeHintFromFilename(file.name) || "";
       const ext = extFor(mime);
@@ -85,7 +87,7 @@ export async function POST(request: Request) {
         return jsonError("Only JPEG, PNG, WebP, and GIF images are allowed", 400);
       }
       const buf = Buffer.from(await file.arrayBuffer());
-      const name = `${stamp}-${i}${ext}`;
+      const name = `${stamp}-${i}-${randomBytes(4).toString("hex")}${ext}`;
 
       if (useBlob) {
         const pathname = `products/${folder}/${name}`;

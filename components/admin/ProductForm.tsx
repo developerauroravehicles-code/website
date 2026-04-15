@@ -83,16 +83,21 @@ export function ProductForm({ product, action }: Props) {
           <ImagesField defaultValue={imagesText} productSlug={product?.slug} />
         </div>
       </div>
-      <div className="flex flex-wrap gap-6">
-        <label className="flex cursor-pointer items-center gap-2 text-sm text-zinc-300">
-          <input
-            type="checkbox"
-            name="featured"
-            defaultChecked={product?.featured}
-            className="size-4 rounded border-zinc-600 bg-zinc-950 accent-accent"
-          />
-          Featured
-        </label>
+      <div className="flex flex-wrap items-start gap-8">
+        <div className="space-y-1">
+          <label className="flex cursor-pointer items-center gap-2 text-sm text-zinc-300">
+            <input
+              type="checkbox"
+              name="featured"
+              defaultChecked={product?.featured}
+              className="size-4 rounded border-zinc-600 bg-zinc-950 accent-accent"
+            />
+            Featured
+          </label>
+          <p className="max-w-xs pl-6 text-xs text-zinc-500">
+            Pinned to the top of the home page list (up to three published products show there).
+          </p>
+        </div>
         <label className="flex cursor-pointer items-center gap-2 text-sm text-zinc-300">
           <input
             type="checkbox"

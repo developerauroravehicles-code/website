@@ -15,9 +15,10 @@ function SectionEyebrow({ children }: { children: ReactNode }) {
 }
 
 export default async function HomePage() {
+  /** Published products for the Signature block; featured rows sort first so the homepage stays curated when you use the checkbox. */
   const featured = await prisma.product.findMany({
-    where: { published: true, featured: true },
-    orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+    where: { published: true },
+    orderBy: [{ featured: "desc" }, { sortOrder: "asc" }, { name: "asc" }],
     take: 3,
   });
 
@@ -52,7 +53,7 @@ export default async function HomePage() {
             <div className="mt-12 lg:mt-16">
               <EliteHomeCollection
                 products={featured}
-                emptyMessage="No featured products yet. Add some from the admin panel."
+                emptyMessage="No published products yet. Add and publish products from the admin panel."
               />
             </div>
           </div>

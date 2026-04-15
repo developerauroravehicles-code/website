@@ -113,18 +113,6 @@ export function ProductImageGallery({ images, productName, coverLayoutId }: Prop
   const lensCx = useSpring(0, { stiffness: 200, damping: 32 });
   const lensCy = useSpring(0, { stiffness: 200, damping: 32 });
 
-  const tiltMax = reduceMotion ? 0 : 4;
-  const rotateX = useSpring(useTransform(my, [-0.5, 0.5], [tiltMax, -tiltMax]), {
-    stiffness: 90,
-    damping: 22,
-    mass: 0.8,
-  });
-  const rotateY = useSpring(useTransform(mx, [-0.5, 0.5], [-tiltMax, tiltMax]), {
-    stiffness: 90,
-    damping: 22,
-    mass: 0.8,
-  });
-
   const shX = useSpring(useTransform(mx, [-0.5, 0.5], [10, -10]), { stiffness: 70, damping: 24 });
   const shY = useSpring(useTransform(my, [-0.5, 0.5], [14, 6]), { stiffness: 70, damping: 24 });
   const dynamicShadow = useMotionTemplate`0 ${shY}px 48px -18px rgba(0,0,0,0.55), ${shX}px ${shY}px 36px -24px rgba(255,69,0,0.08)`;
@@ -205,19 +193,10 @@ export function ProductImageGallery({ images, productName, coverLayoutId }: Prop
         onKeyDown={onKeyDown}
       >
         <motion.div
-          className="relative mx-auto max-w-4xl [perspective:1400px]"
+          className="relative mx-auto w-full max-w-7xl"
           onMouseEnter={() => setStageHovered(true)}
           onMouseMove={onStageMove}
           onMouseLeave={onStageLeave}
-          animate={reduceMotion ? undefined : { y: [0, -3, 0] }}
-          transition={{
-            y: { duration: 11, repeat: Infinity, ease: "easeInOut" },
-          }}
-          style={{
-            rotateX,
-            rotateY,
-            transformStyle: "preserve-3d",
-          }}
         >
           <motion.div
             className="relative overflow-hidden rounded-2xl border border-border/90 bg-zinc-900 ring-1 ring-white/[0.06]"
@@ -225,11 +204,11 @@ export function ProductImageGallery({ images, productName, coverLayoutId }: Prop
               boxShadow: reduceMotion ? "0 24px 48px -20px rgba(0,0,0,0.55)" : dynamicShadow,
             }}
           >
-            <div className="relative aspect-[4/3] w-full sm:aspect-[16/10]">
+            <div className="relative aspect-[3/2] w-full sm:aspect-[5/3]">
               <AnimatePresence mode="wait" initial={false}>
                 <motion.div
                   key={activeIndex}
-                  className="absolute inset-0"
+                  className="absolute inset-0 flex min-h-0 min-w-0 items-center justify-center overflow-hidden p-0"
                   initial={{ opacity: 0.84, scale: 1.016 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0.8, scale: 0.992 }}
@@ -243,7 +222,7 @@ export function ProductImageGallery({ images, productName, coverLayoutId }: Prop
                     layoutId={mainLayoutId}
                     src={images[activeIndex]}
                     alt={`${productName} — photo ${activeIndex + 1} of ${images.length}`}
-                    className="relative z-0 size-full object-contain object-center"
+                    className="relative z-0 max-h-full max-w-full origin-center scale-[1.17] object-contain object-center"
                     draggable={false}
                     loading={activeIndex === 0 ? "eager" : "lazy"}
                     initial={{ filter: reduceMotion ? "blur(0px)" : "blur(6px)" }}

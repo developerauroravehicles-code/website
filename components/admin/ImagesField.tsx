@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useId, useMemo, useState } from "react";
+import { MAX_IMAGE_UPLOAD_BYTES, MAX_IMAGE_UPLOAD_MB } from "@/lib/upload-limits";
 
 type Props = {
   defaultValue: string;
@@ -29,39 +30,58 @@ export function ImagesField({ defaultValue, productSlug }: Props) {
 
   const onFiles = async (fileList: FileList | null) => {
     if (!fileList?.length) return;
+    const files = Array.from(fileList);
+    for (const file of files) {
+      if (file.size > MAX_IMAGE_UPLOAD_BYTES) {
+        setStatus("error");
+        setMessage(`Dosya çok büyük: “${file.name}” (dosya başına en fazla ${MAX_IMAGE_UPLOAD_MB} MB).`);
+        return;
+      }
+    }
     setStatus("uploading");
     setMessage(null);
-    const fd = new FormData();
-    fd.set("folder", folder);
-    for (let i = 0; i < fileList.length; i++) {
-      fd.append("files", fileList[i]);
-    }
     try {
-      const res = await fetch("/api/admin/upload", {
-        method: "POST",
-        body: fd,
-        credentials: "include",
-      });
-      const raw = await res.text();
-      let data: { ok?: boolean; urls?: string[]; error?: string } = {};
-      try {
-        data = raw ? (JSON.parse(raw) as typeof data) : {};
-      } catch {
-        setStatus("error");
-        setMessage(
-          res.ok
-            ? "Sunucu geçersiz yanıt döndürdü."
-            : `Yükleme başarısız (HTTP ${res.status}).`,
-        );
-        return;
+      const collected: string[] = [];
+      for (const file of files) {
+        const fd = new FormData();
+        fd.set("folder", folder);
+        fd.append("files", file);
+        const res = await fetch("/api/admin/upload", {
+          method: "POST",
+          body: fd,
+          credentials: "include",
+        });
+        const raw = await res.text();
+        let data: { ok?: boolean; urls?: string[]; error?: string } = {};
+        try {
+          data = raw ? (JSON.parse(raw) as typeof data) : {};
+        } catch {
+          setStatus("error");
+          setMessage(
+            res.ok
+              ? "Sunucu geçersiz yanıt döndürdü."
+              : res.status === 413
+                ? `İstek çok büyük (HTTP413). Dosya başına en fazla ${MAX_IMAGE_UPLOAD_MB} MB yükleyin veya görselleri sırayla seçin.`
+                : `Yükleme başarısız (HTTP ${res.status}).`,
+          );
+          return;
+        }
+        if (!res.ok) {
+          setStatus("error");
+          setMessage(
+            data.error ??
+              (res.status === 413
+                ? `Dosya veya istek boyutu sınırı aşıldı (en fazla ~${MAX_IMAGE_UPLOAD_MB} MB / dosya).`
+                : "Upload failed"),
+          );
+          return;
+        }
+        if (data.urls?.length) {
+          collected.push(...data.urls);
+        }
       }
-      if (!res.ok) {
-        setStatus("error");
-        setMessage(data.error ?? "Upload failed");
-        return;
-      }
-      if (data.urls?.length) {
-        appendUrls(data.urls);
+      if (collected.length) {
+        appendUrls(collected);
         setStatus("idle");
       } else {
         setStatus("error");
@@ -78,7 +98,10 @@ export function ImagesField({ defaultValue, productSlug }: Props) {
       <div className="rounded-xl border border-dashed border-zinc-600 bg-zinc-950/50 px-4 py-5">
         <label htmlFor={inputId} className="cursor-pointer text-sm text-zinc-300">
           <span className="font-medium text-accent">Upload images</span>
-          <span className="text-zinc-500"> — JPEG, PNG, WebP, or GIF, up to 5MB each</span>
+          <span className="text-zinc-500">
+            {" "}
+            — JPEG, PNG, WebP, or GIF, up to {MAX_IMAGE_UPLOAD_MB} MB each (several files are uploaded in sequence)
+          </span>
         </label>
         <input
           id={inputId}

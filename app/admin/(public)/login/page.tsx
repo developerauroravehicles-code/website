@@ -1,19 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
-import Script from "next/script";
 import { LoginForm } from "./login-form";
 
 export default function AdminLoginPage() {
-  const recaptchaSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY?.trim();
-
   return (
     <div className="flex min-h-[100dvh] flex-col items-center justify-center px-4">
-      {recaptchaSiteKey ? (
-        <Script
-          src={`https://www.google.com/recaptcha/api.js?render=${recaptchaSiteKey}`}
-          strategy="afterInteractive"
-        />
-      ) : null}
       <div className="w-full max-w-sm space-y-8">
         <div className="text-center">
           <div className="flex justify-center">

@@ -2,16 +2,23 @@
 import { spawnSync } from "node:child_process";
 
 const isPgUrl = (value) => /^postgres(ql)?:\/\//i.test((value ?? "").trim());
+const isPlaceholder = (value) => {
+  const raw = (value ?? "").trim().toLowerCase();
+  if (!raw) return true;
+  return raw.includes("user:pass@host") || raw.includes("://user:pass@");
+};
 
-const candidates = [
-  process.env.DATABASE_URL?.trim(),
-  process.env.POSTGRES_PRISMA_URL?.trim(),
-  process.env.POSTGRES_URL?.trim(),
-  process.env.DATABASE_URL_UNPOOLED?.trim(),
-  process.env.POSTGRES_URL_NON_POOLING?.trim(),
-].filter(Boolean);
+const namedCandidates = [
+  ["DATABASE_URL", process.env.DATABASE_URL?.trim()],
+  ["POSTGRES_PRISMA_URL", process.env.POSTGRES_PRISMA_URL?.trim()],
+  ["POSTGRES_URL", process.env.POSTGRES_URL?.trim()],
+  ["DATABASE_URL_UNPOOLED", process.env.DATABASE_URL_UNPOOLED?.trim()],
+  ["POSTGRES_URL_NON_POOLING", process.env.POSTGRES_URL_NON_POOLING?.trim()],
+].filter(([, value]) => Boolean(value));
 
-const selected = candidates.find((value) => isPgUrl(value));
+const selectedEntry = namedCandidates.find(([, value]) => isPgUrl(value) && !isPlaceholder(value));
+const selected = selectedEntry?.[1];
+const selectedName = selectedEntry?.[0];
 
 if (!selected) {
   console.error(`
@@ -27,13 +34,18 @@ Checked env vars:
 At least one must start with:
   - postgresql://
   - postgres://
+
+Avoid placeholder values like:
+  postgresql://user:pass@host:5432/db?sslmode=require
 `);
   process.exit(1);
 }
 
 const env = { ...process.env, DATABASE_URL: selected };
-if (!process.env.DATABASE_URL || !isPgUrl(process.env.DATABASE_URL)) {
-  console.log("[build] DATABASE_URL was invalid/missing; using fallback from Vercel Postgres variables.");
+if (selectedName !== "DATABASE_URL") {
+  console.log(`[build] Using ${selectedName} as DATABASE_URL for Prisma commands.`);
+} else if (isPlaceholder(process.env.DATABASE_URL)) {
+  console.log("[build] DATABASE_URL appears to be a placeholder; falling back to another Postgres variable.");
 }
 
 const npxCmd = process.platform === "win32" ? "npx.cmd" : "npx";

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { type LoginState } from "./actions";
 
 declare global {
@@ -12,70 +12,101 @@ declare global {
   }
 }
 
-function recaptchaScriptSrc(siteKey: string) {
-  return `https://www.google.com/recaptcha/api.js?render=${encodeURIComponent(siteKey)}`;
+const RECAPTCHA_ONLOAD = "__auroraAdminRecaptchaApiLoad";
+
+function findRecaptchaScriptForKey(siteKey: string) {
+  return Array.from(document.scripts).find(
+    (s) => s.src.includes("recaptcha/api.js") && (s.src.includes(siteKey) || s.src.includes(encodeURIComponent(siteKey))),
+  );
 }
 
-/** Ensures api.js is on the page and grecaptcha.ready has fired. */
-function ensureRecaptchaReady(siteKey: string, timeoutMs = 28_000): Promise<void> {
+/**
+ * Loads api.js and waits until grecaptcha.ready can run.
+ * Uses Google's recommended `onload` callback; falls back to recaptcha.net if the first script errors.
+ */
+function loadRecaptchaApi(siteKey: string, timeoutMs = 35_000): Promise<void> {
   return new Promise((resolve, reject) => {
     let settled = false;
-    const ok = () => {
-      if (settled) return;
-      settled = true;
-      resolve();
+    let timer: ReturnType<typeof setTimeout> | undefined;
+
+    const cleanup = () => {
+      if (timer !== undefined) clearTimeout(timer);
+      delete (window as unknown as Record<string, unknown>)[RECAPTCHA_ONLOAD];
     };
+
     const fail = (msg: string) => {
       if (settled) return;
       settled = true;
+      cleanup();
       reject(new Error(msg));
     };
 
-    const runReady = () => {
-      const g = window.grecaptcha;
-      if (typeof g?.ready !== "function") return false;
-      g.ready(() => ok());
-      return true;
-    };
-
-    if (runReady()) return;
-
-    const src = recaptchaScriptSrc(siteKey);
-    const el = document.querySelector<HTMLScriptElement>(`script[src="${src}"]`);
-
-    const deadline = Date.now() + timeoutMs;
-    const poll = () => {
+    const succeed = () => {
       if (settled) return;
-      if (runReady()) return;
-      if (Date.now() > deadline) {
-        fail(
-          "reCAPTCHA did not load. Allow scripts from google.com, disable blockers for this site, and add your domain (including www) in the Google reCAPTCHA admin console.",
-        );
+      const g = window.grecaptcha;
+      if (typeof g?.ready !== "function") {
+        fail("reCAPTCHA API did not initialize. Use a reCAPTCHA v3 key from Google Admin.");
         return;
       }
-      window.setTimeout(poll, 80);
+      g.ready(() => {
+        if (settled) return;
+        settled = true;
+        cleanup();
+        resolve();
+      });
     };
 
-    if (el) {
-      el.addEventListener("load", poll);
-      el.addEventListener("error", () => fail("reCAPTCHA script was blocked or failed to load."));
-      poll();
+    timer = setTimeout(() => {
+      fail(
+        "reCAPTCHA did not load in time. Confirm you created a v3 key, added auroravehicles.com (and www) under Domains, and that scripts from google.com are not blocked.",
+      );
+    }, timeoutMs);
+
+    if (typeof window.grecaptcha?.ready === "function") {
+      succeed();
       return;
     }
 
-    const s = document.createElement("script");
-    s.src = src;
-    s.async = true;
-    s.defer = true;
-    s.addEventListener("load", poll);
-    s.addEventListener("error", () => fail("reCAPTCHA script was blocked or failed to load."));
-    document.head.appendChild(s);
-    poll();
+    const existing = findRecaptchaScriptForKey(siteKey);
+    if (existing) {
+      if (window.grecaptcha?.ready) {
+        succeed();
+        return;
+      }
+      const onLoad = () => succeed();
+      const onErr = () =>
+        fail("reCAPTCHA script failed. Check the site key and network; try disabling extensions that block Google scripts.");
+      existing.addEventListener("load", onLoad, { once: true });
+      existing.addEventListener("error", onErr, { once: true });
+      return;
+    }
+
+    (window as unknown as Record<string, unknown>)[RECAPTCHA_ONLOAD] = () => {
+      succeed();
+    };
+
+    const inject = (host: "www.google.com" | "www.recaptcha.net") => {
+      const s = document.createElement("script");
+      s.src = `https://${host}/recaptcha/api.js?render=${siteKey}&onload=${RECAPTCHA_ONLOAD}`;
+      s.async = true;
+      s.defer = true;
+      s.onerror = () => {
+        if (host === "www.google.com") {
+          s.remove();
+          inject("www.recaptcha.net");
+          return;
+        }
+        fail("reCAPTCHA could not be loaded from Google. Check firewall / ad blockers.");
+      };
+      document.head.appendChild(s);
+    };
+
+    inject("www.google.com");
   });
 }
 
 async function getRecaptchaToken(siteKey: string): Promise<string> {
-  await ensureRecaptchaReady(siteKey);
+  await loadRecaptchaApi(siteKey);
   return window.grecaptcha!.execute(siteKey, { action: "admin_login" });
 }
 
@@ -83,6 +114,14 @@ export function LoginForm() {
   const [state, setState] = useState<LoginState>({});
   const [clientError, setClientError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+
+  useEffect(() => {
+    const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY?.trim();
+    if (!siteKey) return;
+    loadRecaptchaApi(siteKey).catch(() => {
+      /* warm-up; errors shown on submit */
+    });
+  }, []);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();

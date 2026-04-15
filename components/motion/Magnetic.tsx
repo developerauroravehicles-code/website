@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useMotionValue, useSpring, useReducedMotion } from "framer-motion";
-import { useCallback, useRef } from "react";
+import { useCallback } from "react";
 
 type Props = {
   children: React.ReactNode;
@@ -12,7 +12,6 @@ type Props = {
 };
 
 export function Magnetic({ children, strength = 0.32, className, as = "div" }: Props) {
-  const ref = useRef<HTMLDivElement | HTMLSpanElement>(null);
   const reduceMotion = useReducedMotion();
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -21,11 +20,9 @@ export function Magnetic({ children, strength = 0.32, className, as = "div" }: P
   const Component = as === "span" ? motion.span : motion.div;
 
   const onMove = useCallback(
-    (e: React.MouseEvent) => {
+    (e: React.MouseEvent<HTMLDivElement | HTMLSpanElement>) => {
       if (reduceMotion) return;
-      const el = ref.current;
-      if (!el) return;
-      const rect = el.getBoundingClientRect();
+      const rect = e.currentTarget.getBoundingClientRect();
       const cx = rect.left + rect.width / 2;
       const cy = rect.top + rect.height / 2;
       x.set((e.clientX - cx) * strength);
@@ -41,7 +38,6 @@ export function Magnetic({ children, strength = 0.32, className, as = "div" }: P
 
   return (
     <Component
-      ref={ref}
       className={className}
       style={reduceMotion ? undefined : { x: sx, y: sy }}
       onMouseMove={onMove}

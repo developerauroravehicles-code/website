@@ -1,26 +1,245 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #000000;
+  --foreground: #ffffff;
+  --muted: #9ca3af;
+  --card: #0a0a0a;
+  --border: #1f1f1f;
+  /* Safety orange — brand accent (aligned with social / print orange blocks) */
+  --accent: #ff4500;
+  --accent-dim: #e03d00;
+  /* Lighter orange for eyebrows & secondary highlights on black */
+  --gold: #ff9b7a;
+  /* Shared with hero / motion — cinematic ease-out */
+  --ease-premium: cubic-bezier(0.22, 1, 0.36, 1);
+  /* Fluid horizontal padding — pair with max-w-* containers (e.g. max-w-6xl) */
+  --site-gutter-x: clamp(1rem, 0.45rem + 2.75vw, 2.5rem);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-muted: var(--muted);
+  --color-card: var(--card);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-dim: var(--accent-dim);
+  --color-gold: var(--gold);
+  --font-sans: var(--font-dm-sans);
+  --font-display: var(--font-syne);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/*
+ * Custom cursor: `layout.tsx` sets data-URL cursor on <html> (reliable vs. relative /cursors/... in some setups).
+ * Keep public/cursors/cursor.png ≤ ~32×32px. Below: force inheritance over Tailwind `cursor-pointer` / UA.
+ */
+html {
+  height: 100%;
+  min-height: 100dvh;
+  overflow-x: clip;
+  scroll-behavior: smooth;
+  /* Prevent mobile browsers from inflating small text unpredictably */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  /* Scales rem-based UI (Tailwind) from phones to large desktops */
+  font-size: clamp(14px, 0.3vw + 12.5px, 20px);
+}
+
+/* Cursor hover color inversion */
+a.bg-accent:hover,
+button.bg-accent:hover,
+[role="button"].bg-accent:hover,
+a.border-accent:hover,
+button.border-accent:hover,
+[role="button"].border-accent:hover,
+a.text-accent:hover,
+button.text-accent:hover,
+[role="button"].text-accent:hover {
+  background-color: #fff !important;
+  border-color: #fff !important;
+  outline-color: #fff !important;
+  color: #000 !important;
+  text-decoration-color: #000 !important;
+}
+
+a.bg-accent:hover *,
+button.bg-accent:hover *,
+[role="button"].bg-accent:hover *,
+a.border-accent:hover *,
+button.border-accent:hover *,
+[role="button"].border-accent:hover *,
+a.text-accent:hover *,
+button.text-accent:hover *,
+[role="button"].text-accent:hover * {
+  color: #000 !important;
+  text-decoration-color: #000 !important;
+}
+
+a.bg-card:hover,
+button.bg-card:hover,
+[role="button"].bg-card:hover,
+a.bg-card\/40:hover,
+button.bg-card\/40:hover,
+[role="button"].bg-card\/40:hover,
+a.bg-background:hover,
+button.bg-background:hover,
+[role="button"].bg-background:hover,
+a.border-border:hover,
+button.border-border:hover,
+[role="button"].border-border:hover,
+a.border-border\/90:hover,
+button.border-border\/90:hover,
+[role="button"].border-border\/90:hover {
+  background-color: var(--accent) !important;
+  border-color: var(--accent) !important;
+  outline-color: var(--accent) !important;
+  color: #fff !important;
+  text-decoration-color: #fff !important;
+}
+
+a.bg-card:hover *,
+button.bg-card:hover *,
+[role="button"].bg-card:hover *,
+a.bg-card\/40:hover *,
+button.bg-card\/40:hover *,
+[role="button"].bg-card\/40:hover *,
+a.bg-background:hover *,
+button.bg-background:hover *,
+[role="button"].bg-background:hover *,
+a.border-border:hover *,
+button.border-border:hover *,
+[role="button"].border-border:hover *,
+a.border-border\/90:hover *,
+button.border-border\/90:hover *,
+[role="button"].border-border\/90:hover * {
+  color: #fff !important;
+  text-decoration-color: #fff !important;
 }
 
 body {
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: clip;
+  overflow-wrap: break-word;
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
+  text-rendering: optimizeLegibility;
+}
+
+/* Responsive media — avoid overflow on narrow viewports */
+img,
+video,
+canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+a,
+button,
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+label,
+summary,
+[role="button"],
+.cursor-pointer {
+  cursor: inherit !important;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+textarea,
+[contenteditable="true"] {
+  cursor: inherit !important;
+}
+
+:disabled,
+[disabled] {
+  cursor: inherit !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+::selection {
+  background: color-mix(in oklab, var(--accent) 35%, transparent);
+}
+
+.prose-product {
+  color: color-mix(in oklab, var(--foreground) 88%, transparent);
+  line-height: 1.75;
+}
+
+.prose-product strong {
+  color: var(--foreground);
+  font-weight: 600;
+}
+
+/* Homepage & marketing — ambient glow + dividers aligned with PremiumScrollHero */
+.marketing-section {
+  position: relative;
+  isolation: isolate;
+}
+
+.marketing-section__ambient {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 90% 55% at 50% -8%, color-mix(in oklab, var(--accent) 11%, transparent), transparent 52%),
+    radial-gradient(ellipse 45% 38% at 92% 55%, color-mix(in oklab, var(--gold) 6%, transparent), transparent 48%);
+}
+
+.marketing-section__ambient--soft {
+  background:
+    radial-gradient(ellipse 88% 50% at 50% -5%, color-mix(in oklab, var(--accent) 9%, transparent), transparent 50%),
+    radial-gradient(ellipse 40% 42% at 6% 60%, color-mix(in oklab, var(--gold) 5%, transparent), transparent 48%);
+  opacity: 0.92;
+}
+
+.marketing-section__content {
+  position: relative;
+  z-index: 1;
+}
+
+.marketing-divider {
+  height: 1px;
+  width: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in oklab, var(--accent) 32%, transparent) 42%,
+    color-mix(in oklab, var(--gold) 22%, transparent) 58%,
+    transparent 100%
+  );
+}
+
+/* Dark “night map” look for embedded OSM (Contact) — no API key */
+.marketing-map-embed--dark {
+  filter: invert(92%) hue-rotate(180deg) saturate(0.42) contrast(1.08) brightness(0.84);
+  transform: translateZ(0);
+}
+
+/* Service points: only style tiles so marker pane keeps true colours */
+.service-points-premium .leaflet-tile-pane {
+  filter: invert(92%) hue-rotate(180deg) saturate(0.42) contrast(1.08) brightness(0.84);
+  transform: translateZ(0);
+}
+
+.service-points-premium .service-points-leaflet-divicon {
+  background: transparent !important;
+  border: none !important;
+}
+
+.service-points-premium__marker {
+  filter: brightness(1.35) saturate(1.45) drop-shadow(0 0 12px rgba(255, 69, 0, 0.75));
 }

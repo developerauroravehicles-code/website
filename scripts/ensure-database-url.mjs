@@ -18,3 +18,22 @@ Docs: https://vercel.com/docs/projects/environment-variables
 `);
   process.exit(1);
 }
+
+const hasPostgresProtocol = /^postgres(ql)?:\/\//i.test(url);
+if (!hasPostgresProtocol) {
+  console.error(`
+[build] DATABASE_URL is set but invalid for Prisma PostgreSQL datasource.
+
+Current value does not start with:
+  - postgresql://
+  - postgres://
+
+Please set DATABASE_URL to a real PostgreSQL connection string in:
+  Vercel → Project Settings → Environment Variables
+
+Examples:
+  postgresql://USER:PASSWORD@HOST:5432/DB_NAME?sslmode=require
+  postgres://USER:PASSWORD@HOST:5432/DB_NAME?sslmode=require
+`);
+  process.exit(1);
+}

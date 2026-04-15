@@ -54,7 +54,7 @@ export default function ContactPage() {
                   support@auroravehicles.com
                 </a>
               </div>
-              <div className="grid gap-6 sm:grid-cols-2 sm:text-center">
+              <div className="grid gap-6 sm:grid-cols-3 sm:text-center">
                 <div className="text-center">
                   <p className="text-xs font-semibold uppercase tracking-wide text-muted">Address</p>
                   <p className="mt-1 text-sm font-semibold leading-relaxed text-foreground">
@@ -70,6 +70,17 @@ export default function ContactPage() {
                     className="mt-1 block text-sm font-semibold text-foreground hover:text-accent hover:underline"
                   >
                     604-833-5801
+                  </a>
+                </div>
+                <div className="text-center">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-muted">WhatsApp</p>
+                  <a
+                    href="https://wa.me/16048335801?text="
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-1 block text-sm font-semibold text-foreground hover:text-accent hover:underline"
+                  >
+                    Open chat
                   </a>
                 </div>
               </div>

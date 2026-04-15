@@ -5,7 +5,7 @@ import { MotionAccentLink } from "@/components/marketing/MotionAccentLink";
 export const metadata: Metadata = {
   title: "About Us",
   description:
-    "Aurora Vehicles — Vancouver dashcam specialists. Professional installation, quality equipment, and a mission to keep every journey recorded and protected.",
+    "Aurora Vehicles Vancouver dashcam specialists. Professional installation, quality equipment, and a mission to keep every journey recorded and protected.",
 };
 
 export default function AboutPage() {
@@ -34,7 +34,7 @@ export default function AboutPage() {
         <ScrollReveal delay={0.05}>
           <p className="text-base leading-relaxed">
             On this website, our product pages are for <strong className="font-medium text-foreground">showcase and inquiry</strong>{" "}
-            — contact us for current models, install quotes, and what&apos;s in stock.
+            contact us for current models, install quotes, and what&apos;s in stock.
           </p>
         </ScrollReveal>
 
@@ -45,7 +45,7 @@ export default function AboutPage() {
           <p className="mt-4 text-base leading-relaxed">
             The story of Aurora Vehicles was inspired by a real-life event. One day, our founder witnessed a close
             friend being wrongly blamed for a traffic accident. With no clear evidence at the scene, proving their
-            innocence became impossible. That moment sparked an idea — the right technology could protect drivers and
+            innocence became impossible. That moment sparked an idea the right technology could protect drivers and
             their rights.
           </p>
           <p className="mt-4 text-base leading-relaxed">
@@ -66,7 +66,7 @@ export default function AboutPage() {
             <MotionAccentLink href="/contact" className="font-medium text-accent underline-offset-4 hover:underline">
               contact
             </MotionAccentLink>{" "}
-            page — or explore{" "}
+            page or explore{" "}
             <MotionAccentLink href="/services" className="font-medium text-accent underline-offset-4 hover:underline">
               our services
             </MotionAccentLink>
@@ -76,18 +76,23 @@ export default function AboutPage() {
       </div>
 
       <ScrollReveal className="mt-16" delay={0.06}>
-        <div className="grid gap-4 sm:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4">
           <div className="rounded-2xl border border-border/90 bg-card/50 p-5 shadow-[0_8px_32px_-16px_rgba(0,0,0,0.45)]">
             <p className="text-xs font-medium uppercase tracking-wide text-muted">Experience</p>
-            <p className="mt-2 font-[family-name:var(--font-syne)] text-2xl font-bold text-foreground">5+ years</p>
+            <p className="mt-2 font-[family-name:var(--font-syne)] text-2xl font-bold text-foreground">8+ years</p>
             <p className="mt-1 text-sm text-muted">Technicians you can trust</p>
           </div>
           <div className="rounded-2xl border border-border/90 bg-card/50 p-5 shadow-[0_8px_32px_-16px_rgba(0,0,0,0.45)]">
             <p className="text-xs font-medium uppercase tracking-wide text-muted">Trusted by</p>
-            <p className="mt-2 font-[family-name:var(--font-syne)] text-2xl font-bold text-foreground">50+</p>
-            <p className="mt-1 text-sm text-muted">Dealers and counting</p>
+            <p className="mt-2 font-[family-name:var(--font-syne)] text-2xl font-bold text-foreground">3000+</p>
+            <p className="mt-1 text-sm text-muted">Customers</p>
           </div>
-          <div className="rounded-2xl border border-border/90 bg-card/50 p-5 shadow-[0_8px_32px_-16px_rgba(0,0,0,0.45)] sm:col-span-1">
+          <div className="rounded-2xl border border-border/90 bg-card/50 p-5 shadow-[0_8px_32px_-16px_rgba(0,0,0,0.45)]">
+            <p className="text-xs font-medium uppercase tracking-wide text-muted">Dealers</p>
+            <p className="mt-2 font-[family-name:var(--font-syne)] text-2xl font-bold text-foreground">50+</p>
+            <p className="mt-1 text-sm text-muted">Dealer partners</p>
+          </div>
+          <div className="rounded-2xl border border-border/90 bg-card/50 p-5 shadow-[0_8px_32px_-16px_rgba(0,0,0,0.45)]">
             <p className="text-xs font-medium uppercase tracking-wide text-muted">Focus</p>
             <p className="mt-2 text-lg font-semibold text-foreground">Best quality service</p>
             <p className="mt-1 text-sm text-muted">From consult to clean install</p>
@@ -100,13 +105,16 @@ export default function AboutPage() {
           What we do
         </h2>
         <ul className="mt-4 grid gap-3 sm:grid-cols-2 text-sm text-muted">
-          <li className="rounded-xl border border-border/80 bg-background/40 px-4 py-3">Auto dash cams</li>
-          <li className="rounded-xl border border-border/80 bg-background/40 px-4 py-3">Dash cam batteries & accessories</li>
-          <li className="rounded-xl border border-border/80 bg-background/40 px-4 py-3 sm:col-span-2">
-            Dash cam installation
-          </li>
+          <li className="rounded-xl border border-border/80 bg-background/40 px-4 py-3">Dashcam batteries & accessories</li>
+          <li className="rounded-xl border border-border/80 bg-background/40 px-4 py-3">Back-Up Lights</li>
+          <li className="rounded-xl border border-border/80 bg-background/40 px-4 py-3">Led Lights</li>
+          <li className="rounded-xl border border-border/80 bg-background/40 px-4 py-3">Dashcam installation</li>
         </ul>
       </ScrollReveal>
     </div>
   );
 }
+
+
+
+

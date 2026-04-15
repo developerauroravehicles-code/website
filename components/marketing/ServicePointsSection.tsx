@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import { ServicePointsLeafletMap } from "@/components/marketing/ServicePointsLeafletMap";
 
 type ServicePoint = {
@@ -11,7 +14,38 @@ type Props = {
   points: ServicePoint[];
 };
 
+const MOBILE_VISIBLE_COUNT = 6;
+
 export function ServicePointsSection({ points }: Props) {
+  const [showAllMobile, setShowAllMobile] = useState(false);
+  const hasMoreOnMobile = points.length > MOBILE_VISIBLE_COUNT;
+  const mobilePoints = points.slice(0, MOBILE_VISIBLE_COUNT);
+
+  const renderPointItem = (point: ServicePoint) => (
+    <li
+      key={point.city}
+      className="group relative bg-[#16181f] p-4 transition-[background-color,box-shadow] duration-300 ease-[var(--ease-premium)] hover:bg-[#1c1f2a] hover:shadow-[inset_0_0_0_1px_rgba(255,69,0,0.12)] sm:p-5"
+    >
+      <div className="flex gap-3.5">
+        <span
+          className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full bg-[#2a1510] ring-1 ring-[#ff4500]/35"
+          aria-hidden
+        >
+          <svg viewBox="0 0 24 24" className="size-5 text-[#ea4335]" fill="currentColor" aria-hidden>
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z" />
+          </svg>
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-500">Service point</p>
+          <p className="mt-1.5 text-sm leading-snug">
+            <span className="font-semibold text-zinc-100">{point.city}</span>
+            <span className="text-zinc-500">, {point.region}</span>
+          </p>
+        </div>
+      </div>
+    </li>
+  );
+
   return (
     <section className="service-points-premium relative overflow-hidden rounded-3xl ring-1 ring-white/[0.08]" aria-labelledby="service-points-heading">
       <div className="service-points-premium__map-shell relative aspect-[21/10] min-h-[220px] w-full sm:aspect-[21/9] sm:min-h-[280px] lg:min-h-[320px]">
@@ -38,39 +72,41 @@ export function ServicePointsSection({ points }: Props) {
             installs and support.
           </p>
 
+          <ul className="mt-10 grid gap-px overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.06] sm:hidden" role="list">
+            {mobilePoints.map(renderPointItem)}
+          </ul>
+
+          {hasMoreOnMobile ? (
+            <div className="mt-4 sm:hidden">
+              <button
+                type="button"
+                onClick={() => setShowAllMobile((prev) => !prev)}
+                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-zinc-300 transition-colors hover:border-[#ff4500]/45 hover:text-white"
+                aria-expanded={showAllMobile}
+                aria-controls="service-points-mobile-list"
+              >
+                {showAllMobile ? "Show less" : "Show more"}
+                <span aria-hidden className={`text-[10px] transition-transform ${showAllMobile ? "rotate-180" : ""}`}>
+                  ▼
+                </span>
+              </button>
+            </div>
+          ) : null}
+
           <ul
-            className="mt-10 grid gap-px overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.06] sm:grid-cols-2 lg:grid-cols-3"
+            id="service-points-mobile-list"
+            className="mt-4 grid gap-px overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.06] sm:hidden"
+            role="list"
+            hidden={!showAllMobile || !hasMoreOnMobile}
+          >
+            {points.slice(MOBILE_VISIBLE_COUNT).map(renderPointItem)}
+          </ul>
+
+          <ul
+            className="mt-10 hidden gap-px overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.06] sm:grid sm:grid-cols-2 lg:grid-cols-3"
             role="list"
           >
-            {points.map((point) => (
-              <li
-                key={point.city}
-                className="group relative bg-[#16181f] p-4 transition-[background-color,box-shadow] duration-300 ease-[var(--ease-premium)] hover:bg-[#1c1f2a] hover:shadow-[inset_0_0_0_1px_rgba(255,69,0,0.12)] sm:p-5"
-              >
-                <div className="flex gap-3.5">
-                  <span
-                    className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full bg-[#2a1510] ring-1 ring-[#ff4500]/35"
-                    aria-hidden
-                  >
-                    <svg
-                      viewBox="0 0 24 24"
-                      className="size-5 text-[#ea4335]"
-                      fill="currentColor"
-                      aria-hidden
-                    >
-                      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z" />
-                    </svg>
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-500">Service point</p>
-                    <p className="mt-1.5 text-sm leading-snug">
-                      <span className="font-semibold text-zinc-100">{point.city}</span>
-                      <span className="text-zinc-500">, {point.region}</span>
-                    </p>
-                  </div>
-                </div>
-              </li>
-            ))}
+            {points.map(renderPointItem)}
           </ul>
         </div>
       </div>

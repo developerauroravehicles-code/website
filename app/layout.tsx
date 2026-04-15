@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { DM_Sans, Inter, Syne } from "next/font/google";
-import { SiteBackgroundMusic } from "@/components/providers/SiteBackgroundMusic";
+import { WhatsAppFloatingButton } from "@/components/providers/WhatsAppFloatingButton";
 import { getSiteCursorCssValue } from "@/lib/site-cursor";
 import "./globals.css";
 
@@ -62,7 +62,7 @@ export default function RootLayout({
       style={{ cursor: siteCursor }}
     >
       <body className="flex min-h-[100dvh] flex-col overflow-x-clip bg-background text-foreground" style={{ cursor: "inherit" }}>
-        <SiteBackgroundMusic />
+        <WhatsAppFloatingButton />
         {children}
       </body>
     </html>

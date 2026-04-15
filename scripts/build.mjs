@@ -63,4 +63,6 @@ const run = (args) => {
 
 run(["prisma", "generate"]);
 run(["prisma", "migrate", "deploy"]);
+// Ensure admin user exists in production DB for /admin login.
+run(["tsx", "prisma/seed-admin.ts"]);
 run(["next", "build"]);

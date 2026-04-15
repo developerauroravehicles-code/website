@@ -39,7 +39,7 @@ export function LoginForm() {
           autoComplete="username"
           required
           className="h-11 w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 text-sm outline-none ring-accent/40 placeholder:text-zinc-600 focus:border-accent focus:ring-2"
-          placeholder="admin@example.com"
+          placeholder="your admin email"
         />
       </div>
       <div className="space-y-1.5">

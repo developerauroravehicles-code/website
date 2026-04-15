@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
+import { verifyLoginBotGuard } from "@/lib/admin-login-bot-guard";
 import { loginWithPassword } from "@/lib/auth-server";
-import { verifyAdminLoginRecaptcha } from "@/lib/recaptcha-verify";
 
 export async function POST(request: Request) {
   let formData: FormData;
@@ -10,9 +10,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid form data" }, { status: 400 });
   }
 
-  const recaptcha = await verifyAdminLoginRecaptcha(String(formData.get("recaptchaToken") ?? ""), request);
-  if (!recaptcha.ok) {
-    return NextResponse.json({ error: recaptcha.error }, { status: 400 });
+  const bot = verifyLoginBotGuard(formData);
+  if (!bot.ok) {
+    return NextResponse.json({ error: bot.error }, { status: 400 });
   }
 
   const email = String(formData.get("email") ?? "");

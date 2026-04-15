@@ -1,8 +1,18 @@
 import Image from "next/image";
 import Link from "next/link";
+import { createLoginBotChallenge } from "@/lib/admin-login-bot-guard";
 import { LoginForm } from "./login-form";
 
+export const dynamic = "force-dynamic";
+
 export default function AdminLoginPage() {
+  let challenge: ReturnType<typeof createLoginBotChallenge> | null = null;
+  try {
+    challenge = createLoginBotChallenge();
+  } catch {
+    challenge = null;
+  }
+
   return (
     <div className="flex min-h-[100dvh] flex-col items-center justify-center px-4">
       <div className="w-full max-w-sm space-y-8">
@@ -19,7 +29,7 @@ export default function AdminLoginPage() {
           <h1 className="mt-5 font-[family-name:var(--font-syne)] text-2xl font-bold tracking-tight">Admin</h1>
           <p className="mt-2 text-sm text-zinc-400">Sign in to continue.</p>
         </div>
-        <LoginForm />
+        <LoginForm challenge={challenge} />
         <p className="text-center text-xs text-zinc-500">
           <Link href="/" className="text-accent hover:underline">
             Back to site

@@ -42,7 +42,19 @@ export function ImagesField({ defaultValue, productSlug }: Props) {
         body: fd,
         credentials: "include",
       });
-      const data = (await res.json()) as { ok?: boolean; urls?: string[]; error?: string };
+      const raw = await res.text();
+      let data: { ok?: boolean; urls?: string[]; error?: string } = {};
+      try {
+        data = raw ? (JSON.parse(raw) as typeof data) : {};
+      } catch {
+        setStatus("error");
+        setMessage(
+          res.ok
+            ? "Sunucu geçersiz yanıt döndürdü."
+            : `Yükleme başarısız (HTTP ${res.status}).`,
+        );
+        return;
+      }
       if (!res.ok) {
         setStatus("error");
         setMessage(data.error ?? "Upload failed");
@@ -57,7 +69,7 @@ export function ImagesField({ defaultValue, productSlug }: Props) {
       }
     } catch {
       setStatus("error");
-      setMessage("Network error");
+      setMessage("Ağ hatası — bağlantıyı kontrol edin.");
     }
   };
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, type FormEvent } from "react";
+import { RECAPTCHA_LOGIN_ACTION } from "@/lib/recaptcha-verify";
 import { type LoginState } from "./actions";
 
 declare global {
@@ -8,23 +9,36 @@ declare global {
     grecaptcha?: {
       ready: (cb: () => void) => void;
       execute: (siteKey: string, options: { action: string }) => Promise<string>;
+      enterprise?: {
+        ready: (cb: () => void) => void;
+        execute: (siteKey: string, options: { action: string }) => Promise<string>;
+      };
     };
   }
 }
 
 const RECAPTCHA_ONLOAD = "__auroraAdminRecaptchaApiLoad";
 
+function recaptchaEnterpriseEnabled(): boolean {
+  return process.env.NEXT_PUBLIC_RECAPTCHA_USE_ENTERPRISE === "true";
+}
+
+function recaptchaScriptBasename(): string {
+  return recaptchaEnterpriseEnabled() ? "recaptcha/enterprise.js" : "recaptcha/api.js";
+}
+
 function findRecaptchaScriptForKey(siteKey: string) {
+  const base = recaptchaScriptBasename();
   return Array.from(document.scripts).find(
-    (s) => s.src.includes("recaptcha/api.js") && (s.src.includes(siteKey) || s.src.includes(encodeURIComponent(siteKey))),
+    (s) => s.src.includes(base) && (s.src.includes(siteKey) || s.src.includes(encodeURIComponent(siteKey))),
   );
 }
 
 /**
- * Loads api.js and waits until grecaptcha.ready can run.
- * Uses Google's recommended `onload` callback; falls back to recaptcha.net if the first script errors.
+ * Loads Enterprise or standard web API and waits until ready-callback chain can run.
  */
 function loadRecaptchaApi(siteKey: string, timeoutMs = 35_000): Promise<void> {
+  const enterprise = recaptchaEnterpriseEnabled();
   return new Promise((resolve, reject) => {
     let settled = false;
     let timer: ReturnType<typeof setTimeout> | undefined;
@@ -43,9 +57,27 @@ function loadRecaptchaApi(siteKey: string, timeoutMs = 35_000): Promise<void> {
 
     const succeed = () => {
       if (settled) return;
+      if (enterprise) {
+        const ge = window.grecaptcha?.enterprise;
+        if (typeof ge?.ready !== "function") {
+          fail(
+            "reCAPTCHA Enterprise did not load. Set NEXT_PUBLIC_RECAPTCHA_USE_ENTERPRISE=true and use a reCAPTCHA Enterprise site key.",
+          );
+          return;
+        }
+        ge.ready(() => {
+          if (settled) return;
+          settled = true;
+          cleanup();
+          resolve();
+        });
+        return;
+      }
       const g = window.grecaptcha;
       if (typeof g?.ready !== "function") {
-        fail("reCAPTCHA API did not initialize. Use a reCAPTCHA v3 key from Google Admin.");
+        fail(
+          "reCAPTCHA API did not initialize. For Enterprise keys set NEXT_PUBLIC_RECAPTCHA_USE_ENTERPRISE=true; otherwise use a classic v3 key.",
+        );
         return;
       }
       g.ready(() => {
@@ -58,18 +90,25 @@ function loadRecaptchaApi(siteKey: string, timeoutMs = 35_000): Promise<void> {
 
     timer = setTimeout(() => {
       fail(
-        "reCAPTCHA did not load in time. Confirm you created a v3 key, added auroravehicles.com (and www) under Domains, and that scripts from google.com are not blocked.",
+        enterprise
+          ? "reCAPTCHA Enterprise did not load in time. Check domains in the Enterprise console (auroravehicles.com / www), GCP API key, and that google.com scripts are not blocked."
+          : "reCAPTCHA did not load in time. Confirm you created a v3 key, added your domain under Domains, and that scripts from google.com are not blocked.",
       );
     }, timeoutMs);
 
-    if (typeof window.grecaptcha?.ready === "function") {
+    if (enterprise) {
+      if (typeof window.grecaptcha?.enterprise?.ready === "function") {
+        succeed();
+        return;
+      }
+    } else if (typeof window.grecaptcha?.ready === "function") {
       succeed();
       return;
     }
 
     const existing = findRecaptchaScriptForKey(siteKey);
     if (existing) {
-      if (window.grecaptcha?.ready) {
+      if (enterprise ? window.grecaptcha?.enterprise?.ready : window.grecaptcha?.ready) {
         succeed();
         return;
       }
@@ -85,9 +124,10 @@ function loadRecaptchaApi(siteKey: string, timeoutMs = 35_000): Promise<void> {
       succeed();
     };
 
+    const path = recaptchaScriptBasename();
     const inject = (host: "www.google.com" | "www.recaptcha.net") => {
       const s = document.createElement("script");
-      s.src = `https://${host}/recaptcha/api.js?render=${siteKey}&onload=${RECAPTCHA_ONLOAD}`;
+      s.src = `https://${host}/${path}?render=${siteKey}&onload=${RECAPTCHA_ONLOAD}`;
       s.async = true;
       s.defer = true;
       s.onerror = () => {
@@ -107,7 +147,10 @@ function loadRecaptchaApi(siteKey: string, timeoutMs = 35_000): Promise<void> {
 
 async function getRecaptchaToken(siteKey: string): Promise<string> {
   await loadRecaptchaApi(siteKey);
-  return window.grecaptcha!.execute(siteKey, { action: "admin_login" });
+  if (recaptchaEnterpriseEnabled()) {
+    return window.grecaptcha!.enterprise!.execute(siteKey, { action: RECAPTCHA_LOGIN_ACTION });
+  }
+  return window.grecaptcha!.execute(siteKey, { action: RECAPTCHA_LOGIN_ACTION });
 }
 
 export function LoginForm() {

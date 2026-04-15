@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid form data" }, { status: 400 });
   }
 
-  const recaptcha = await verifyAdminLoginRecaptcha(String(formData.get("recaptchaToken") ?? ""));
+  const recaptcha = await verifyAdminLoginRecaptcha(String(formData.get("recaptchaToken") ?? ""), request);
   if (!recaptcha.ok) {
     return NextResponse.json({ error: recaptcha.error }, { status: 400 });
   }

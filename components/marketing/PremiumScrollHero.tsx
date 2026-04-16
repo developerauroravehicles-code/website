@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useMotionValue, useReducedMotion, useSpring } from "framer-motion";
 import { HERO_EASE, HERO_SPRING } from "@/hooks/useHeroAnimation";
 import { spring } from "@/lib/motion-presets";
@@ -23,8 +23,18 @@ export type PremiumScrollHeroProps = {
   footer?: React.ReactNode;
 };
 
+/** Avoid SSR/client hydration mismatch: Framer’s keyframe `animate` applies different `transform` than the server snapshot. */
+function useClientMounted() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  return mounted;
+}
+
 function LensShimmer({ disabled }: { disabled: boolean }) {
-  if (disabled) return null;
+  const mounted = useClientMounted();
+  if (!mounted || disabled) return null;
   return (
     <motion.div
       className="pointer-events-none absolute left-[48%] top-[42%] z-20 h-[38%] w-[32%] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full opacity-70 mix-blend-soft-light"
@@ -32,6 +42,7 @@ function LensShimmer({ disabled }: { disabled: boolean }) {
     >
       <motion.div
         className="absolute inset-0 -translate-x-full skew-x-12 bg-gradient-to-r from-transparent via-white/35 to-transparent"
+        initial={{ x: "-120%" }}
         animate={{ x: ["-120%", "220%"] }}
         transition={{
           duration: 5,

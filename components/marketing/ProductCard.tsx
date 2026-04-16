@@ -9,7 +9,14 @@ import { spring } from "@/lib/motion-presets";
 
 const MotionLink = motion.create(Link);
 
-export function ProductCard({ product }: { product: Product }) {
+export function ProductCard({
+  product,
+  imagePriority = false,
+}: {
+  product: Product;
+  /** First tile on /products — slightly better LCP when this image is above the fold. */
+  imagePriority?: boolean;
+}) {
   const imgs = productImageUrls(product);
   const src = imgs[0];
   const coverId = src ? `product-cover-${product.slug}` : undefined;
@@ -39,6 +46,9 @@ export function ProductCard({ product }: { product: Product }) {
             <img
               src={src}
               alt=""
+              fetchPriority={imagePriority ? "high" : "low"}
+              loading={imagePriority ? "eager" : "lazy"}
+              decoding="async"
               className="max-h-full max-w-full object-contain transition duration-[0.7s] ease-[cubic-bezier(0.34,1.2,0.64,1)] group-hover:scale-[1.05]"
             />
           ) : (

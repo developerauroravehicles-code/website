@@ -31,12 +31,29 @@ model Product {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
-  homeHeroSetting SiteSetting?
+  homeHeroSetting    SiteSetting? @relation("HomeHeroPick")
+  signaturePick1For  SiteSetting? @relation("SignaturePick1")
+  signaturePick2For  SiteSetting? @relation("SignaturePick2")
+  signaturePick3For  SiteSetting? @relation("SignaturePick3")
 }
 
 model SiteSetting {
   id                Int      @id @default(1)
   homeHeroProductId String?  @unique
-  homeHeroProduct   Product? @relation(fields: [homeHeroProductId], references: [id], onDelete: SetNull)
-  updatedAt         DateTime @updatedAt
+  homeHeroProduct   Product? @relation("HomeHeroPick", fields: [homeHeroProductId], references: [id], onDelete: SetNull)
+  // Home hero — three stat tiles (label + subline each)
+  homeStat1Label String @default("UHD")
+  homeStat1Sub   String @default("4K pipeline")
+  homeStat2Label String @default("f/1.8")
+  homeStat2Sub   String @default("Low-light glass")
+  homeStat3Label String @default("140°")
+  homeStat3Sub   String @default("Wide FOV")
+  // Signature block (home): large tile + two stacked — order 1, 2, 3 (@unique for Prisma 1:1 with Product)
+  signatureProduct1Id String? @unique
+  signatureProduct2Id String? @unique
+  signatureProduct3Id String? @unique
+  signatureProduct1 Product? @relation("SignaturePick1", fields: [signatureProduct1Id], references: [id], onDelete: SetNull)
+  signatureProduct2 Product? @relation("SignaturePick2", fields: [signatureProduct2Id], references: [id], onDelete: SetNull)
+  signatureProduct3 Product? @relation("SignaturePick3", fields: [signatureProduct3Id], references: [id], onDelete: SetNull)
+  updatedAt      DateTime @updatedAt
 }

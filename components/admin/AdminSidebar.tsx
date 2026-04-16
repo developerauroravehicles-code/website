@@ -4,6 +4,7 @@ import Link from "next/link";
 const links = [
   { href: "/admin", label: "Overview" },
   { href: "/admin/products", label: "Products" },
+  { href: "/admin/home-hero", label: "Home page" },
   { href: "/admin/cursor-design", label: "Cursor (Figma)" },
 ];
 

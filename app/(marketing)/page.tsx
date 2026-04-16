@@ -4,7 +4,7 @@ import { PremiumDashcamHero } from "@/components/marketing/PremiumDashcamHero";
 import { MotionAccentLink } from "@/components/marketing/MotionAccentLink";
 import { EliteHomeCollection } from "@/components/marketing/EliteHomeCollection";
 import { EliteHomeServices } from "@/components/marketing/EliteHomeServices";
-import { prisma } from "@/lib/db";
+import { getSignatureSectionProducts } from "@/lib/site-settings";
 
 export const revalidate = 120;
 
@@ -15,12 +15,7 @@ function SectionEyebrow({ children }: { children: ReactNode }) {
 }
 
 export default async function HomePage() {
-  /** Published products for the Signature block; featured rows sort first so the homepage stays curated when you use the checkbox. */
-  const featured = await prisma.product.findMany({
-    where: { published: true },
-    orderBy: [{ featured: "desc" }, { sortOrder: "asc" }, { name: "asc" }],
-    take: 3,
-  });
+  const featured = await getSignatureSectionProducts();
 
   return (
     <main className="overflow-x-hidden">

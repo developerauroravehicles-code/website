@@ -3,18 +3,14 @@ import { HomeStats } from "@/components/marketing/HomeStats";
 import { prisma } from "@/lib/db";
 import { getHomeHeroProductId } from "@/lib/home-hero";
 import { productImageUrls } from "@/lib/product-utils";
+import { getHomeHeroSpecs } from "@/lib/site-settings";
 
 const DEFAULT_FRONT_SRC = "/products/lynx-eye/1.png";
-
-const SPECS = [
-  { label: "UHD", sub: "4K pipeline" },
-  { label: "f/1.8", sub: "Low-light glass" },
-  { label: "140°", sub: "Wide FOV" },
-];
 
 export async function PremiumDashcamHero() {
   let frontImageSrc = DEFAULT_FRONT_SRC;
   let frontAlt = "Dashcam product";
+  const specs = await getHomeHeroSpecs();
 
   try {
     const homeHeroProductId = await getHomeHeroProductId();
@@ -25,7 +21,7 @@ export async function PremiumDashcamHero() {
           subtitle="Engineered optics, concealed installs, and a catalog you can explore before you book."
           frontImageSrc={frontImageSrc}
           frontAlt={frontAlt}
-          specs={SPECS}
+          specs={specs}
           primaryCta={{ href: "/products", label: "Browse products" }}
           secondaryCta={{ href: "/contact", label: "Book installation" }}
           footer={<HomeStats />}
@@ -54,7 +50,7 @@ export async function PremiumDashcamHero() {
       subtitle="Engineered optics, concealed installs, and a catalog you can explore before you book."
       frontImageSrc={frontImageSrc}
       frontAlt={frontAlt}
-      specs={SPECS}
+      specs={specs}
       primaryCta={{ href: "/products", label: "Browse products" }}
       secondaryCta={{ href: "/contact", label: "Book installation" }}
       footer={<HomeStats />}

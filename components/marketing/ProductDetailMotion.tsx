@@ -68,17 +68,36 @@ export function ProductDetailMotion({
           >
             <ReactMarkdown>{product.longDescription || ""}</ReactMarkdown>
           </ScrollReveal>
-          <ScrollReveal delay={0.12}>
-            <div className="mt-10 rounded-2xl border border-accent/25 bg-accent/5 p-6 shadow-[0_8px_32px_-16px_rgba(255,69,0,0.2)]">
-              <p className="font-semibold text-foreground">Installation & info</p>
-              <p className="mt-2 text-sm text-muted">
-                Want a quote or help checking fitment for this setup? We&apos;re happy to help.
-              </p>
-              <div className="mt-4 inline-flex">
-                <MagneticSpringLink href="/contact" variant="ghost" magneticStrength={0.26}>
-                  Get in touch
-                </MagneticSpringLink>
+          <ScrollReveal delay={0.12} className="mt-10">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:items-stretch">
+              <div className="flex h-full flex-col rounded-2xl border border-accent/25 bg-accent/5 p-6 shadow-[0_8px_32px_-16px_rgba(255,69,0,0.2)]">
+                <p className="font-semibold text-foreground">Installation & info</p>
+                <p className="mt-2 text-sm text-muted">
+                  Want a quote or help checking fitment for this setup? We&apos;re happy to help.
+                </p>
+                <div className="mt-auto pt-4">
+                  <MagneticSpringLink href="/contact" variant="ghost" magneticStrength={0.26}>
+                    Get in touch
+                  </MagneticSpringLink>
+                </div>
               </div>
+              {product.userManualUrl?.trim() ? (
+                <div className="flex h-full flex-col rounded-2xl border border-[#301008] bg-zinc-950/40 p-6 shadow-[0_8px_32px_-16px_rgba(48,16,8,0.35)]">
+                  <p className="font-semibold text-foreground">User manual</p>
+                  <p className="mt-2 text-sm text-muted">
+                    Download the official PDF manual for this product. Your browser will save the file when you tap the
+                    link.
+                  </p>
+                  <div className="mt-auto pt-4">
+                    <a
+                      href={`/api/products/${encodeURIComponent(product.slug)}/user-manual`}
+                      className="text-sm font-semibold text-foreground underline-offset-4 hover:underline"
+                    >
+                      Download PDF
+                    </a>
+                  </div>
+                </div>
+              ) : null}
             </div>
           </ScrollReveal>
         </div>

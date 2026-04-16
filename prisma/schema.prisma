@@ -23,6 +23,8 @@ model Product {
   shortDescription String
   longDescription  String   @default("")
   images           String   @default("[]")
+  // Public URL for user manual PDF (e.g. Vercel Blob); empty = none
+  userManualUrl    String   @default("")
   featured         Boolean  @default(false)
   published        Boolean  @default(false)
   sortOrder        Int      @default(0)

@@ -1,6 +1,7 @@
 import type { Product } from "@prisma/client";
 import { productImageUrls } from "@/lib/product-utils";
 import { ImagesField } from "@/components/admin/ImagesField";
+import { UserManualField } from "@/components/admin/UserManualField";
 
 type Props = {
   product?: Product;
@@ -81,6 +82,9 @@ export function ProductForm({ product, action }: Props) {
         </div>
         <div className="space-y-2 md:col-span-2">
           <ImagesField defaultValue={imagesText} productSlug={product?.slug} />
+        </div>
+        <div className="space-y-2 md:col-span-2">
+          <UserManualField defaultValue={product?.userManualUrl ?? ""} productSlug={product?.slug} />
         </div>
       </div>
       <div className="flex flex-wrap items-start gap-8">

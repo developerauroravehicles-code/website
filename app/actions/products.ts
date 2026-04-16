@@ -35,6 +35,7 @@ export async function createProductAction(formData: FormData) {
   const shortDescription = String(formData.get("shortDescription") ?? "").trim();
   const longDescription = String(formData.get("longDescription") ?? "").trim();
   const images = stringifyImageUrls(parseImageLines(String(formData.get("images") ?? "")));
+  const userManualUrl = String(formData.get("userManualUrl") ?? "").trim();
   const featured = formData.get("featured") === "on";
   const published = formData.get("published") === "on";
   const sortOrder = Number.parseInt(String(formData.get("sortOrder") ?? "0"), 10) || 0;
@@ -46,6 +47,7 @@ export async function createProductAction(formData: FormData) {
       shortDescription,
       longDescription,
       images,
+      userManualUrl,
       featured,
       published,
       sortOrder,
@@ -77,6 +79,7 @@ export async function updateProductAction(productId: string, formData: FormData)
   const shortDescription = String(formData.get("shortDescription") ?? "").trim();
   const longDescription = String(formData.get("longDescription") ?? "").trim();
   const images = stringifyImageUrls(parseImageLines(String(formData.get("images") ?? "")));
+  const userManualUrl = String(formData.get("userManualUrl") ?? "").trim();
   const featured = formData.get("featured") === "on";
   const published = formData.get("published") === "on";
   const sortOrder = Number.parseInt(String(formData.get("sortOrder") ?? "0"), 10) || 0;
@@ -89,6 +92,7 @@ export async function updateProductAction(productId: string, formData: FormData)
       shortDescription,
       longDescription,
       images,
+      userManualUrl,
       featured,
       published,
       sortOrder,

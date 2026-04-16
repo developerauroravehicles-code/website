@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  /** Avoid bundling a stale Prisma client into server chunks (fixes schema drift / validation errors after `prisma generate`). */
+  serverExternalPackages: ["@prisma/client", "prisma"],
   async redirects() {
     return [
       { source: "/hizmetler", destination: "/services", permanent: true },

@@ -55,5 +55,8 @@ model SiteSetting {
   signatureProduct1 Product? @relation("SignaturePick1", fields: [signatureProduct1Id], references: [id], onDelete: SetNull)
   signatureProduct2 Product? @relation("SignaturePick2", fields: [signatureProduct2Id], references: [id], onDelete: SetNull)
   signatureProduct3 Product? @relation("SignaturePick3", fields: [signatureProduct3Id], references: [id], onDelete: SetNull)
+  // Nova app QR redirect (/products/nova/app)
+  novaAppPlayStoreUrl String @default("")
+  novaAppAppStoreUrl  String @default("")
   updatedAt      DateTime @updatedAt
 }

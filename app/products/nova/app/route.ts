@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { renderNovaAppChooserHtml } from "@/lib/nova-app-chooser-html";
-import { detectMobileStoreTarget, getNovaAppStoreUrls } from "@/lib/nova-app";
+import { detectMobileStoreTarget, getNovaAppStoreUrls, isValidStoreUrl } from "@/lib/nova-app";
 
 export const runtime = "nodejs";
 
@@ -10,10 +10,10 @@ export async function GET(request: Request) {
   const urls = await getNovaAppStoreUrls();
   const target = detectMobileStoreTarget(request.headers.get("user-agent"));
 
-  if (target === "play" && urls.play) {
+  if (target === "play" && urls.play && isValidStoreUrl(urls.play)) {
     return NextResponse.redirect(urls.play, 302);
   }
-  if (target === "appstore" && urls.appStore) {
+  if (target === "appstore" && urls.appStore && isValidStoreUrl(urls.appStore)) {
     return NextResponse.redirect(urls.appStore, 302);
   }
 

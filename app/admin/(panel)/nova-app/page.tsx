@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { NovaAppQrPreview } from "@/components/admin/NovaAppQrPreview";
 import { NovaAppStoreForm } from "@/components/admin/NovaAppStoreForm";
-import { getNovaAppPublicUrl, getNovaAppStoreUrls } from "@/lib/nova-app";
+import { getNovaAppPublicUrl, getNovaAppStoreUrls, getPublicSiteUrlWarnings } from "@/lib/nova-app";
 
 type Props = { searchParams: Promise<{ saved?: string; error?: string }> };
 
@@ -9,6 +9,7 @@ export default async function AdminNovaAppPage({ searchParams }: Props) {
   const sp = await searchParams;
   const urls = await getNovaAppStoreUrls();
   const targetUrl = getNovaAppPublicUrl();
+  const envWarnings = getPublicSiteUrlWarnings(process.env.NEXT_PUBLIC_SITE_URL);
 
   const errorMessage =
     sp.error === "play"
@@ -34,7 +35,7 @@ export default async function AdminNovaAppPage({ searchParams }: Props) {
         </p>
       </div>
 
-      <NovaAppQrPreview targetUrl={targetUrl} />
+      <NovaAppQrPreview targetUrl={targetUrl} envWarnings={envWarnings} />
 
       <NovaAppStoreForm
         playStoreUrl={urls.play}

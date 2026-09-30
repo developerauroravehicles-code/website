@@ -58,5 +58,8 @@ model SiteSetting {
   // Nova app QR redirect (/products/nova/app)
   novaAppPlayStoreUrl String @default("")
   novaAppAppStoreUrl  String @default("")
+  // AuroraCam public page store buttons (/auroracam)
+  auroraCamPlayStoreUrl String @default("")
+  auroraCamAppStoreUrl  String @default("")
   updatedAt      DateTime @updatedAt
 }

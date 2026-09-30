@@ -40,6 +40,11 @@ export function AnimatedSiteFooter() {
                     Products
                   </MotionLink>
                 </li>
+                <li>
+                  <MotionLink href="/auroracam" className="inline-block hover:text-accent" whileHover={{ x: 4 }} transition={{ duration: 0.4, ease: EASE_IN_OUT }}>
+                    AuroraCam
+                  </MotionLink>
+                </li>
               </ul>
             </div>
             <div className="space-y-2">

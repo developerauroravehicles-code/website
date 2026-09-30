@@ -6,6 +6,7 @@ const links = [
   { href: "/admin/products", label: "Products" },
   { href: "/admin/home-hero", label: "Home page" },
   { href: "/admin/nova-app", label: "Nova app (QR)" },
+  { href: "/admin/auroracam", label: "AuroraCam" },
   { href: "/admin/cursor-design", label: "Cursor (Figma)" },
 ];
 

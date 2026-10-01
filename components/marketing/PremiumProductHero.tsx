@@ -12,6 +12,7 @@ const DEFAULT_SPECS = [
 ];
 
 const FALLBACK_FRONT = "/products/lynx-eye/1.png";
+const NOVA_PROMO_VIDEO_SRC = "/videos/aurora-promo.mp4";
 
 export function PremiumProductHero({ product }: { product: Product }) {
   const imgs = useMemo(() => productImageUrls(product), [product.images]);
@@ -27,6 +28,7 @@ export function PremiumProductHero({ product }: { product: Product }) {
       specs={DEFAULT_SPECS}
       primaryCta={{ href: "/contact", label: "Get a quote" }}
       secondaryCta={{ href: "/products", label: "All products" }}
+      promoVideoSrc={product.slug === "nova" ? NOVA_PROMO_VIDEO_SRC : undefined}
     />
   );
 }

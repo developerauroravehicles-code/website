@@ -20,6 +20,8 @@ export type PremiumScrollHeroProps = {
   specs: PremiumScrollHeroSpec[];
   primaryCta: { href: string; label: string };
   secondaryCta?: { href: string; label: string };
+  /** When set, replaces the hero front image with this video (e.g. Nova promo). */
+  promoVideoSrc?: string;
   footer?: React.ReactNode;
 };
 
@@ -120,6 +122,7 @@ export function PremiumScrollHero({
   specs,
   primaryCta,
   secondaryCta,
+  promoVideoSrc,
   footer,
 }: PremiumScrollHeroProps) {
   const reduceMotion = useReducedMotion();
@@ -182,17 +185,35 @@ export function PremiumScrollHero({
           </div>
 
           <div className="relative mx-auto mt-10 w-full max-w-[min(94vw,560px)] sm:mt-12 sm:max-w-[min(92vw,760px)]">
-            <div className="relative aspect-[3/2] w-full overflow-hidden rounded-2xl bg-zinc-950/35 ring-1 ring-white/[0.1] backdrop-blur-[0.5px]">
-              <Image
-                src={frontImageSrc}
-                alt={frontAlt}
-                fill
-                sizes="(max-width: 640px) 94vw, 760px"
-                className="z-0 object-contain object-center p-1 sm:p-2"
-                unoptimized
-                priority
-              />
-              <LensShimmer disabled={!!reduceMotion} />
+            <div
+              className={`relative w-full overflow-hidden rounded-2xl bg-zinc-950/35 ring-1 ring-white/[0.1] backdrop-blur-[0.5px] ${promoVideoSrc ? "aspect-video" : "aspect-[3/2]"}`}
+            >
+              {promoVideoSrc ? (
+                <video
+                  className="absolute inset-0 h-full w-full object-cover"
+                  src={promoVideoSrc}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  controls
+                  preload="metadata"
+                  aria-label={`${title} promo video`}
+                />
+              ) : (
+                <>
+                  <Image
+                    src={frontImageSrc}
+                    alt={frontAlt}
+                    fill
+                    sizes="(max-width: 640px) 94vw, 760px"
+                    className="z-0 object-contain object-center p-1 sm:p-2"
+                    unoptimized
+                    priority
+                  />
+                  <LensShimmer disabled={!!reduceMotion} />
+                </>
+              )}
             </div>
           </div>
 

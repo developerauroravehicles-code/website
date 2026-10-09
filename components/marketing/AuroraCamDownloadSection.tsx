@@ -45,7 +45,9 @@ export function AuroraCamDownloadSection({ playUrl, appStoreUrl }: Props) {
         Get the app
       </h2>
       <p className="mt-2 max-w-xl text-sm text-muted">
-        AuroraCam is available for Android and iOS. Download links appear here once the app is live on each store.
+        {playUrl || appStoreUrl
+          ? "Download AuroraCam for your device using the links below."
+          : "AuroraCam is available for Android and iOS. Download links appear here once the app is live on each store."}
       </p>
       <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-start">
         <StoreButton href={playUrl || null} label="Google Play" sublabel="Android" />

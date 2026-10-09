@@ -6,6 +6,7 @@ import { productImageUrls } from "@/lib/product-utils";
 import { getHomeHeroSpecs } from "@/lib/site-settings";
 
 const DEFAULT_FRONT_SRC = "/products/lynx-eye/1.png";
+const HOME_HERO_VIDEO_SRC = "/videos/home-hero.mp4";
 
 export async function PremiumDashcamHero() {
   let frontImageSrc = DEFAULT_FRONT_SRC;
@@ -21,6 +22,7 @@ export async function PremiumDashcamHero() {
           subtitle="Engineered optics, concealed installs, and a catalog you can explore before you book."
           frontImageSrc={frontImageSrc}
           frontAlt={frontAlt}
+          promoVideoSrc={HOME_HERO_VIDEO_SRC}
           specs={specs}
           primaryCta={{ href: "/products", label: "Browse products" }}
           secondaryCta={{ href: "/contact", label: "Book installation" }}
@@ -50,6 +52,7 @@ export async function PremiumDashcamHero() {
       subtitle="Engineered optics, concealed installs, and a catalog you can explore before you book."
       frontImageSrc={frontImageSrc}
       frontAlt={frontAlt}
+      promoVideoSrc={HOME_HERO_VIDEO_SRC}
       specs={specs}
       primaryCta={{ href: "/products", label: "Browse products" }}
       secondaryCta={{ href: "/contact", label: "Book installation" }}

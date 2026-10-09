@@ -10,6 +10,9 @@ export const metadata: Metadata = {
     "Aurora Dashcam mobile app for iOS and Android — view footage, manage your dashcam, and stay connected on the road.",
 };
 
+/** Store URLs come from admin + DB; avoid a one-time static snapshot at build (empty “Coming soon”). */
+export const dynamic = "force-dynamic";
+
 export default async function AuroraCamPage() {
   const urls = await getAuroraCamStoreUrls();
 

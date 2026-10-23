@@ -3,11 +3,13 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { updateProductAction } from "@/app/actions/products";
 import { ProductForm } from "@/components/admin/ProductForm";
+import { ProductFormError } from "@/components/admin/ProductFormError";
 
-type Props = { params: Promise<{ id: string }> };
+type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ error?: string }> };
 
-export default async function EditProductPage({ params }: Props) {
+export default async function EditProductPage({ params, searchParams }: Props) {
   const { id } = await params;
+  const { error } = await searchParams;
   const product = await prisma.product.findUnique({ where: { id } });
   if (!product) notFound();
 
@@ -24,6 +26,7 @@ export default async function EditProductPage({ params }: Props) {
         </h1>
         <p className="text-sm text-zinc-500">{product.name}</p>
       </div>
+      <ProductFormError code={error} />
       <ProductForm product={product} action={boundUpdate} />
     </div>
   );

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { isAllowedManualUrl } from "@/lib/manual-url";
 
 export const runtime = "nodejs";
 
@@ -29,7 +30,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ slug
     select: { userManualUrl: true },
   });
   const stored = product?.userManualUrl?.trim();
-  if (!product || !stored) {
+  if (!product || !stored || !isAllowedManualUrl(stored)) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 

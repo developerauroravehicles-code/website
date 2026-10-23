@@ -1,8 +1,13 @@
 import Link from "next/link";
 import { createProductAction } from "@/app/actions/products";
 import { ProductForm } from "@/components/admin/ProductForm";
+import { ProductFormError } from "@/components/admin/ProductFormError";
 
-export default function NewProductPage() {
+type Props = { searchParams: Promise<{ error?: string }> };
+
+export default async function NewProductPage({ searchParams }: Props) {
+  const { error } = await searchParams;
+
   return (
     <div className="space-y-8">
       <div className="flex flex-col gap-2">
@@ -13,6 +18,7 @@ export default function NewProductPage() {
           New product
         </h1>
       </div>
+      <ProductFormError code={error} />
       <ProductForm action={createProductAction} />
     </div>
   );

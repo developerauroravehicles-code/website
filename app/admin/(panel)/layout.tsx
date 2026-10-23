@@ -1,10 +1,17 @@
+import { redirect } from "next/navigation";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
+import { getSession } from "@/lib/auth-server";
 
-export default function AdminPanelLayout({
+export default async function AdminPanelLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await getSession();
+  if (!session || session.role !== "admin") {
+    redirect("/admin/login");
+  }
+
   return (
     <div className="flex min-h-[100dvh]">
       <AdminSidebar />

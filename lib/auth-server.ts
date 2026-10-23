@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db";
 import { getSessionCookieName, signSessionToken, verifySessionToken, type SessionPayload } from "@/lib/jwt";
 
-const MAX_AGE = 60 * 60 * 24 * 7; // 7 days
+const MAX_AGE = 60 * 60 * 24; // 1 day
 
 export async function getSession(): Promise<SessionPayload | null> {
   const jar = await cookies();

@@ -8,6 +8,7 @@ import { getSession } from "@/lib/auth-server";
 import { slugify } from "@/lib/slug";
 import { stringifyImageUrls } from "@/lib/product-utils";
 import { allocateUniqueSlug } from "@/lib/product-slug";
+import { isAllowedManualUrl } from "@/lib/manual-url";
 
 async function requireAdmin() {
   const session = await getSession();
@@ -36,6 +37,9 @@ export async function createProductAction(formData: FormData) {
   const longDescription = String(formData.get("longDescription") ?? "").trim();
   const images = stringifyImageUrls(parseImageLines(String(formData.get("images") ?? "")));
   const userManualUrl = String(formData.get("userManualUrl") ?? "").trim();
+  if (!isAllowedManualUrl(userManualUrl)) {
+    redirect("/admin/products/new?error=manual");
+  }
   const featured = formData.get("featured") === "on";
   const published = formData.get("published") === "on";
   const sortOrder = Number.parseInt(String(formData.get("sortOrder") ?? "0"), 10) || 0;
@@ -80,6 +84,9 @@ export async function updateProductAction(productId: string, formData: FormData)
   const longDescription = String(formData.get("longDescription") ?? "").trim();
   const images = stringifyImageUrls(parseImageLines(String(formData.get("images") ?? "")));
   const userManualUrl = String(formData.get("userManualUrl") ?? "").trim();
+  if (!isAllowedManualUrl(userManualUrl)) {
+    redirect(`/admin/products/${productId}/edit?error=manual`);
+  }
   const featured = formData.get("featured") === "on";
   const published = formData.get("published") === "on";
   const sortOrder = Number.parseInt(String(formData.get("sortOrder") ?? "0"), 10) || 0;
